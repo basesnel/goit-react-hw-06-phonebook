@@ -4,15 +4,37 @@ import { nanoid } from 'nanoid';
 import ContactForm from './ContactForm';
 import Filter from './Filter';
 import ContactList from './ContactList';
-import initContacts from './contacts.json';
+// import initContacts from './contacts.json';
 
 import { PhonebookSection } from './Phonebook.styled';
 
 class Phonebook extends React.Component {
   state = {
-    contacts: initContacts,
+    contacts: [],
     filter: '',
   };
+
+  componentDidMount() {
+    // console.log('App componentDidMount');
+
+    const contacts = localStorage.getItem('contacts');
+    const parsedContacts = JSON.parse(contacts);
+    console.log(parsedContacts);
+
+    if (parsedContacts) {
+      this.setState({ contacts: parsedContacts });
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    // console.log('App componentDidUpdate');
+
+    if (this.state.contacts !== prevState.contacts) {
+      // console.log('The field contacts is updated');
+
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+    }
+  }
 
   formSubmitHandler = data => {
     const { name, number } = data;
