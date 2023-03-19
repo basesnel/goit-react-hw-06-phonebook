@@ -16,7 +16,8 @@ const scheme = yup.object().shape({
     .matches(
       /^(\+?\d{0,4})?\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{2,3}\)?)\s?-?\s?(\(?\d{2,4}\)?)?$/,
       'Not valid, please try: +0000-000-000-0000'
-    ),
+    )
+    .required(),
 });
 
 class ContactForm extends React.Component {
@@ -46,6 +47,7 @@ class ContactForm extends React.Component {
         initialValues={this.state}
         validationSchema={scheme}
         onSubmit={this.handleSubmit}
+        isValid
       >
         <ContactFormGetUp>
           <label htmlFor={this.nameInputId} className="contactform__label">
