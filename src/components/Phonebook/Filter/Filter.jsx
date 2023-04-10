@@ -1,8 +1,6 @@
 import PropTypes from 'prop-types';
 import { FilterLabel } from './Filter.styled';
 
-// import useLocalStorage from 'components/hooks/useLocalStorage';
-
 const Filter = ({ value, onChange }) => {
   return (
     <FilterLabel>

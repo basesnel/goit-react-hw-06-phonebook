@@ -1,26 +1,24 @@
-import { useEffect } from 'react';
 import { nanoid } from 'nanoid';
 
 import ContactForm from './ContactForm';
 import Filter from './Filter';
 import ContactList from './ContactList';
-// import initContacts from './contacts.json';
 
 import { PhonebookSection } from './Phonebook.styled';
 
-import useLocalStorage from 'components/hooks/useLocalStorage';
+import { useSelector } from 'react-redux';
+import { getContacts, getFilter } from '../../redux/selectors';
+import { useDispatch } from 'react-redux';
+import { addContact, deleteContact, setFilter } from 'redux/actions';
 
 export default function Phonebook() {
-  const [contacts, setContacts] = useLocalStorage('contacts', []);
-  const [filter, setFilter] = useLocalStorage('filter', '');
+  const contacts = useSelector(getContacts);
+  const filter = useSelector(getFilter);
 
-  useEffect(() => {
-    localStorage.setItem('contacts', JSON.stringify(contacts));
-  }, [contacts]);
+  const dispatch = useDispatch();
 
   const formSubmitHandler = data => {
     const { name, number } = data;
-    const contactsToCopy = contacts;
 
     const contact = {
       id: nanoid(),
@@ -34,15 +32,15 @@ export default function Phonebook() {
       return;
     }
 
-    setContacts([contact, ...contactsToCopy]);
+    dispatch(addContact(contact));
   };
 
   const changeFilter = event => {
-    setFilter(event.currentTarget.value);
+    dispatch(setFilter(event.currentTarget.value));
   };
 
-  const deleteContact = contactId => {
-    setContacts(contacts.filter(contact => contact.id !== contactId));
+  const handleDeleteContact = contactId => {
+    dispatch(deleteContact(contactId));
   };
 
   const normaliseFilter = filter.toLowerCase();
@@ -58,7 +56,10 @@ export default function Phonebook() {
 
       <h2 className="title">Contacts</h2>
       <Filter value={filter} onChange={changeFilter} />
-      <ContactList contacts={visibleContacts} onDeleteContact={deleteContact} />
+      <ContactList
+        contacts={visibleContacts}
+        onDeleteContact={handleDeleteContact}
+      />
     </PhonebookSection>
   );
 }
