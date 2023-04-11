@@ -1,11 +1,13 @@
-// import { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { nanoid } from 'nanoid';
 import { ErrorMessage, Formik } from 'formik';
 import * as yup from 'yup';
 
 import { ContactFormGetUp, Input } from './ContactForm.styled';
 import useLocalStorage from 'components/hooks/useLocalStorage';
+
+import { useSelector, useDispatch } from 'react-redux';
+import { getContacts } from '../../../redux/selectors';
+import { addContact } from 'redux/actions';
 
 // const phoneRegExp =
 //   /^(\+?\d{0,4})?\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{4}\)?)?$/
@@ -21,7 +23,7 @@ const scheme = yup.object().shape({
     .required(),
 });
 
-export default function ContactForm(props) {
+export default function ContactForm() {
   const [name, setName] = useLocalStorage('name', '');
   const [number, setNumber] = useLocalStorage('number', '');
 
@@ -47,8 +49,30 @@ export default function ContactForm(props) {
     }
   };
 
+  const contacts = useSelector(getContacts);
+
+  const dispatch = useDispatch();
+
+  const formSubmitHandler = data => {
+    const { name, number } = data;
+
+    const contact = {
+      id: nanoid(),
+      name,
+      number,
+    };
+
+    const contactName = contact.name.toLowerCase();
+    if (contacts.find(contact => contact.name.toLowerCase() === contactName)) {
+      alert(`${contact.name} is already in contacts.`);
+      return;
+    }
+
+    dispatch(addContact(contact));
+  };
+
   const handleSubmit = event => {
-    props.onSubmit(state);
+    formSubmitHandler(state);
     reset();
   };
 
@@ -107,82 +131,3 @@ export default function ContactForm(props) {
     </Formik>
   );
 }
-
-// class ContactForm extends React.Component {
-//   state = { name: '', number: '' };
-
-//   nameInputId = nanoid();
-//   numberInputId = nanoid();
-
-//   handleChange = event => {
-//     const { name, value } = event.currentTarget;
-//     this.setState({ [name]: value });
-//   };
-
-//   handleSubmit = event => {
-//     this.props.onSubmit(this.state);
-//     this.reset();
-//   };
-
-//   reset = () => {
-//     this.setState({ name: '', number: '' });
-//   };
-
-//   render() {
-//     return (
-//       <Formik
-//         enableReinitialize
-//         initialValues={this.state}
-//         validationSchema={scheme}
-//         onSubmit={this.handleSubmit}
-//         isValid
-//       >
-//         <ContactFormGetUp>
-//           <label htmlFor={this.nameInputId} className="contactform__label">
-//             Name
-//             <Input
-//               type="text"
-//               name="name"
-//               title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-//               value={this.state.name}
-//               onChange={this.handleChange}
-//               id={this.nameInputId}
-//               className="contactform__input"
-//             />
-//             <ErrorMessage
-//               name="name"
-//               component="div"
-//               className="contactform__error"
-//             />
-//           </label>
-//           <label htmlFor={this.numberInputId} className="contactform__label">
-//             Number
-//             <Input
-//               type="tel"
-//               name="number"
-//               title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-//               value={this.state.number}
-//               onChange={this.handleChange}
-//               id={this.numberInputId}
-//               className="contactform__input"
-//             />
-//             <ErrorMessage
-//               name="number"
-//               component="div"
-//               className="contactform__error"
-//             />
-//           </label>
-//           <button type="submit" className="contactform__button">
-//             Add contact
-//           </button>
-//         </ContactFormGetUp>
-//       </Formik>
-//     );
-//   }
-// }
-
-ContactForm.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
-};
-
-// export default ContactForm;
