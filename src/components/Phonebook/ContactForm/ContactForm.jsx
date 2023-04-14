@@ -7,7 +7,7 @@ import useLocalStorage from 'components/hooks/useLocalStorage';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { getContacts } from '../../../redux/selectors';
-import { addContact } from 'redux/actions';
+import { addContact } from 'redux/contactsSlice';
 
 // const phoneRegExp =
 //   /^(\+?\d{0,4})?\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{4}\)?)?$/
